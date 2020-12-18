@@ -2,12 +2,10 @@
 # configuration.
 
 { config, lib, pkgs, ... }:
-
 let
   inherit (lib) mkOption literalExample;
-  netbootpkgs = pkgs.callPackage ./pkgs {};
+  netbootpkgs = pkgs.callPackage ./pkgs { };
 in
-
 {
   config = {
     # Don't build the GRUB menu builder script, since we don't need it
@@ -15,13 +13,13 @@ in
     boot.loader.grub.enable = false;
 
     # make testing faster
-    boot.initrd.compressor = "gzip -9n";
+    boot.initrd.compressor = "pigz --best --recursive";
 
     # !!! Hack - attributes expected by other modules.
     environment.systemPackages = [ pkgs.grub2_efi ]
-    ++ (
+      ++ (
       if pkgs.stdenv.hostPlatform.system == "aarch64-linux"
-      then []
+      then [ ]
       else [ pkgs.grub2 pkgs.syslinux ]
     );
 
